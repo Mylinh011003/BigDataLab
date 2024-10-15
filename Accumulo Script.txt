@@ -1,0 +1,107 @@
+mvn compile exec:exec -Pshell
+Sau khi vào kết nối với MiniInstance thành công: 
+- Tạo table1:
+createtable table1
+- Kiểm tra các table hiện đang có:
+tables
+- Nhập dữ liệu vào table1
+insert "jon snow" "contact" "address" "123 any street" -l "billing"
+insert "jon snow" "contact" "city" "King's Landing" -l "billing"
+insert "jon snow" "contact" "phone" "5555-8888" -l "billing"
+insert "jon snow" "purchases" "sneakers" "$60" -l "inventory"
+insert "rob stark" "contact" "address" "456 any street" -l "billing"
+insert "rob stark" "contact" "city" "Winterfell" -l "billing"
+insert "rob stark" "purchases" "glasses" "$40" -l "inventory"
+insert "rob stark" "purchases" "cap" "$10" -l "inventory"
+- Scan dữ liệu:
+scan
+- Cài đặt truy cập:
+set
+- Cài đặt phân quyền:
+setauths -u root -s inventory,billing
+- Scan dữ liệu:
+scan
+scan -st
+- Lọc dữ liệu của khách hàng jon snow
+scan -r "jon snow"
+- Lọc dữ liệu "billing"
+scan -s billing
+- Ngừng thao tác trên table1, tạo table2
+mvn clean compile exec:exec -Dtable.name=table2 -Dinstance.name=miniInstance \ 
+> -Dzookeeper.location=localhost:*** -Pjava:create
+- Định dạng dữ liệu cho table2:
+mvn clean compile exec:exec -Drow.id="jon snow" \
+> -Dcolumn.family=contact \
+> -Dcolumn.qualifier=address \
+> -Dauths=billing \
+> -Dvalue="123 any street" \
+> -Dtable.name=table2 \
+> -Dinstance.name=miniInstance -Dzookeeper.location=localhost:**** -Pjava:insert
+---------------RUN--------------
+mvn clean compile exec:exec -Drow.id="jon snow" \
+> -Dcolumn.family=contact \
+> -Dcolumn.qualifier=city \
+> -Dauths=billing \
+> -Dvalue="King's Landing" \
+> -Dtable.name=table2 \
+> -Dinstance.name=miniInstance -Dzookeeper.location=localhost:**** -Pjava:insert
+-------------RUN-------------
+mvn clean compile exec:exec -Drow.id="jon snow" \
+> -Dcolumn.family=contact \
+> -Dcolumn.qualifier=phone \
+> -Dauths=billing \
+> -Dvalue="5555-8888" \
+> -Dtable.name=table2 \
+> -Dinstance.name=miniInstance -Dzookeeper.location=localhost:**** -Pjava:insert
+-------------RUN--------------
+mvn clean compile exec:exec -Drow.id="jon snow" \
+> -Dcolumn.family=purchases \
+> -Dcolumn.qualifier=sneakers \
+> -Dauths=billing\&inventory \
+> -Dvalue="\$60" \
+> -Dtable.name=table2 \
+> -Dinstance.name=miniInstance -Dzookeeper.location=localhost:**** -Pjava:insert
+------------------RUN----------
+mvn clean compile exec:exec -Drow.id="rob stark" \
+> -Dcolumn.family=contact \
+> -Dcolumn.qualifier=address \
+> -Dauths=billing \
+> -Dvalue="456 any street" \
+> -Dtable.name=table2 \
+> -Dinstance.name=miniInstance -Dzookeeper.location=localhost:**** -Pjava:insert
+--------------RUN------------
+mvn clean compile exec:exec -Drow.id="rob stark" \
+> -Dcolumn.family=contact \
+> -Dcolumn.qualifier=city \
+> -Dauths=billing \
+> -Dvalue="Winterfell" \
+> -Dtable.name=table2 \
+> -Dinstance.name=miniInstance -Dzookeeper.location=localhost:**** -Pjava:insert
+------------RUN-----------
+mvn clean compile exec:exec -Drow.id="rob stark" \
+> -Dcolumn.family=purchases \
+> -Dcolumn.qualifier=glasses \
+> -Dauths=billing\&inventory \
+> -Dvalue="\$40" \
+> -Dtable.name=table2 \
+> -Dinstance.name=miniInstance -Dzookeeper.location=localhost:**** -Pjava:insert
+-------------RUN----------
+mvn clean compile exec:exec -Drow.id="rob stark" \
+> -Dcolumn.family=purchases \
+> -Dcolumn.qualifier=cap \
+> -Dauths=billing\&inventory \
+> -Dvalue="\$10" \
+> -Dtable.name=table2 \
+> -Dinstance.name=miniInstance -Dzookeeper.location=localhost:**** -Pjava:insert
+- Scan toàn bộ dữ liệu:
+mvn clean compile exec:exec -Dtable.name=table2 -Dinstance.name=miniInstance \ 
+> -Dzookeeper.location=localhost:*** -Pjava:scan
+- Chuyển thao tác với table2
+table table2
+- Cài đặt phân quyền:
+setauths - u root -s inventory,billing
+
+
+
+
+
